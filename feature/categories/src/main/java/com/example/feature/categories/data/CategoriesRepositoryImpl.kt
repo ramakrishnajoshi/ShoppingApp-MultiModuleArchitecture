@@ -10,8 +10,14 @@ class CategoriesRepositoryImpl @Inject constructor(
     private val api: ProductApiService
 ) : CategoriesRepository {
     override fun getCategories(): Flow<List<Category>> = flow {
-        val names = api.getCategories()
-        emit(names.map { Category(name = it) })
+        val items = api.getCategories()
+        emit(items.map { dto ->
+            Category(
+                slug = dto.slug ?: "unknown",
+                name = dto.name ?: "",
+                url = dto.url ?: ""
+            )
+        })
     }
 }
 

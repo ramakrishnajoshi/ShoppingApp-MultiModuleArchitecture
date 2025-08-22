@@ -5,12 +5,19 @@ data class Product(
     val title: String,
     val description: String,
     val price: Double,
-    val thumbnail: String?,
-    val category: String
+    val discountPercentage: Double,
+    val rating: Double,
+    val stock: Int,
+    val brand: String,
+    val category: String,
+    val thumbnail: String,
+    val images: List<String>
 )
 
 data class Category(
-    val name: String
+    val slug: String,
+    val name: String,
+    val url: String
 )
 
 sealed class Resource<out T> {

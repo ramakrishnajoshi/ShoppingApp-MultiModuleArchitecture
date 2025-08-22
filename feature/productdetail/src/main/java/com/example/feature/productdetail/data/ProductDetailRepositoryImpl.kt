@@ -13,12 +13,17 @@ class ProductDetailRepositoryImpl @Inject constructor(
         val dto = api.getProductById(id)
         emit(
             Product(
-                id = dto.id,
-                title = dto.title,
-                description = dto.description,
-                price = dto.price,
-                thumbnail = dto.thumbnail,
-                category = dto.category
+                id = dto.id ?: -1,
+                title = dto.title ?: "",
+                description = dto.description ?: "",
+                price = dto.price ?: 0.0,
+                discountPercentage = dto.discountPercentage ?: 0.0,
+                rating = dto.rating ?: 0.0,
+                stock = dto.stock ?: 0,
+                brand = dto.brand ?: "",
+                category = dto.category ?: "",
+                thumbnail = dto.thumbnail ?: "",
+                images = dto.images ?: emptyList()
             )
         )
     }
