@@ -20,4 +20,6 @@ Provide networking stack and API interfaces for features.
 ### How to Extend
 - Add new DTOs in `dto/`, add service methods in `api/`, provide new interfaces in a DI module as needed.
 
+### Architecture Documentation
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed rationales behind the design decisions in this module.
 

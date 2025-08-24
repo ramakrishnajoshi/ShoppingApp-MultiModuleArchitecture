@@ -19,4 +19,7 @@ Show products inside a selected category (by slug).
 ### How to Extend
 - Add sorting, search; observe result from detail to update list or navigate.
 
+### Architecture Documentation
+This module follows the same architectural patterns as [feature:categories](../categories/ARCHITECTURE.md). Refer to that documentation for detailed rationales behind the design decisions.
+
 

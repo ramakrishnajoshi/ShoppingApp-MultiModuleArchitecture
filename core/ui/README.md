@@ -18,4 +18,5 @@ Shared Compose UI components and theme.
 ### How to Extend
 - Add reusable composables; keep them stateless and parameterized.
 
-
+### Architecture Documentation
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed rationales behind the design decisions in this module.

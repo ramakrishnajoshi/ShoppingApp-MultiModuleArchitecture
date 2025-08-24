@@ -19,4 +19,7 @@ Display product details with images, brand, price, stock, rating.
 ### How to Extend
 - Add reviews section, image carousel, add-to-cart; send selection back via `savedStateHandle`.
 
+### Architecture Documentation
+This module follows the same architectural patterns as [feature:categories](../categories/ARCHITECTURE.md). Refer to that documentation for detailed rationales behind the design decisions.
+
 
