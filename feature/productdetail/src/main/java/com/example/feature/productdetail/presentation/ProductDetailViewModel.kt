@@ -27,7 +27,7 @@ class ProductDetailViewModel @Inject constructor(
     val uiState: StateFlow<ProductDetailUiState> = _uiState.asStateFlow()
 
     companion object {
-        const val ARG_PRODUCT_ID = "arg_product_id"
+        const val ARG_PRODUCT_ID = "id"
         const val RESULT_SELECTED = "result_selected"
     }
 
