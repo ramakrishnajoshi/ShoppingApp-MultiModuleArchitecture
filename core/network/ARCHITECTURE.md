@@ -44,6 +44,14 @@ This module provides centralized networking infrastructure for all feature modul
 - **Configuration**: Different environments (dev, staging, prod) can use different configurations
 - **Lifecycle Management**: Hilt manages singleton instances efficiently
 - **Modularity**: Features can depend on abstractions, not concrete implementations
+  - **What this means**: Instead of feature modules directly depending on specific network implementation classes (like `RetrofitApiService`), they depend on interfaces/abstractions (like `ApiService` interface)
+  - **Concrete example**: A feature module imports `ApiService` interface, not `RetrofitApiServiceImpl` class
+  - **Benefits**: 
+    - **Decoupling**: Feature modules don't know or care if we use Retrofit, OkHttp, or any other networking library
+    - **Replaceability**: We can switch from Retrofit to another networking solution without changing any feature code
+    - **Testing**: Features can easily use mock implementations of `ApiService` for unit testing
+    - **Parallel Development**: Teams can work on features while network implementation is still being developed
+    - **Build Performance**: Features only compile against interfaces, reducing compilation dependencies
 
 ### Why IoDispatcher for Network Calls?
 - **Thread Safety**: Network calls should never block the main thread

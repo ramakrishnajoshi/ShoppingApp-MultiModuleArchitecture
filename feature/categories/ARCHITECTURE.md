@@ -130,6 +130,15 @@ abstract class CategoriesModule {
 
 **Benefits**:
 - **Interface Segregation**: Depend on abstractions, not implementations
+  - **What this means**: The `@Binds` annotation tells Hilt to provide the interface (`CategoriesRepository`) when requested, but internally bind it to the concrete implementation (`CategoriesRepositoryImpl`)
+  - **Why abstractions matter**:
+    - **Interface Segregation Principle**: Clients (like ViewModels) should only depend on the methods they actually use, not on concrete classes with additional methods they don't need
+    - **Dependency Inversion**: High-level modules (UI layer) don't depend on low-level modules (data layer), both depend on abstractions
+  - **Concrete benefits**:
+    - **ViewModel simplicity**: `CategoriesViewModel` only knows about `suspend fun getCategories()` from the interface, not internal implementation details
+    - **Implementation flexibility**: We can switch from room database to web API or in-memory cache without changing ViewModel code
+    - **Testing isolation**: Unit tests can inject a `FakeCategoriesRepository` that implements the same interface
+    - **Code contracts**: Interface defines the "what" (contract), implementation handles the "how" (details)
 - **Testing**: Easy to provide test implementations
 - **Singleton Scope**: Repository is shared across the app
 - **Performance**: Hilt creates instances only when needed
