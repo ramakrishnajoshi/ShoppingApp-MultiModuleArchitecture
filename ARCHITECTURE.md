@@ -45,9 +45,107 @@ Presentation ──→ Domain ──→ Data
 **Why**: Separation of concerns, testability, and maintainability.
 
 ### 3. Dependency Inversion
-- Higher-level modules don't depend on lower-level modules
-- Both depend on abstractions (interfaces)
-- **Implementation**: Repository interfaces in domain, implementations in data layer
+
+**Core Principle**: Higher-level modules should not depend on lower-level modules. Both should depend on abstractions (interfaces).
+
+#### What are Higher-Level vs Lower-Level Modules?
+
+**Higher-Level Modules** (Business Logic):
+- Domain layer (Use Cases, Business Rules)
+- Presentation layer (ViewModels, UI Components)
+- These modules contain the core business logic and application policies
+
+**Lower-Level Modules** (Implementation Details):
+- Data layer (Repository implementations, API clients, Database access)
+- Infrastructure concerns (Network, Database, File System)
+- These modules handle technical implementation details
+
+#### Why Dependency Inversion Matters
+
+**Without Dependency Inversion** (❌ Problematic):
+```kotlin
+// UseCase directly depends on concrete implementation
+class GetCategoriesUseCase(
+    private val apiService: ProductApiService  // Direct dependency on low-level module
+) {
+    // Business logic is tightly coupled to API implementation
+}
+```
+
+**With Dependency Inversion** (✅ Correct):
+```kotlin
+// UseCase depends only on abstraction
+class GetCategoriesUseCase(
+    private val repository: CategoriesRepository  // Depends on interface/abstraction
+) {
+    // Business logic is independent of implementation details
+}
+```
+
+#### How It's Implemented in This Project
+
+**1. Repository Interfaces in Domain Context**
+```kotlin
+// Interface defines what the domain needs (contract)
+interface CategoriesRepository {
+    fun getCategories(): Flow<List<Category>>
+}
+
+// UseCase depends on abstraction, not implementation
+class GetCategoriesUseCase @Inject constructor(
+    private val repository: CategoriesRepository  // Abstraction dependency
+)
+```
+
+**2. Implementations in Data Layer**
+```kotlin
+// Concrete implementation handles technical details
+class CategoriesRepositoryImpl @Inject constructor(
+    private val api: ProductApiService
+) : CategoriesRepository {
+    // Implementation can change without affecting domain
+}
+```
+
+**3. Dependency Injection Wiring**
+```kotlin
+@Module
+abstract class CategoriesModule {
+    @Binds
+    abstract fun bindCategoriesRepository(
+        impl: CategoriesRepositoryImpl
+    ): CategoriesRepository  // Binds concrete to abstraction
+}
+```
+
+#### Benefits of This Approach
+
+**1. Flexibility and Replaceability**
+- Can swap implementations (REST API → GraphQL → Local Database) without changing business logic
+- Different implementations for different environments (mock for testing, real for production)
+
+**2. Testability** 
+- Use Cases can be tested with mock repositories
+- No need to set up real network/database for unit tests
+- Fast, isolated test execution
+
+**3. Parallel Development**
+- Teams can work on domain logic while data layer is being implemented
+- Interface serves as a contract between teams
+
+**4. Build Performance**
+- Higher-level modules don't need to recompile when lower-level implementations change
+- Reduced build times in large codebases
+
+**5. Code Stability**
+- Business logic remains stable even when technical implementation changes
+- Reduces cascade effects of changes through the system
+
+**6. Framework Independence**
+- Domain layer doesn't know about Android, Retrofit, Room, or any framework
+- Business logic can be reused across different platforms
+
+This pattern ensures that the application's core business logic (what makes your app unique) is protected from changes in technical implementation details (databases, APIs, frameworks).
 
 ### 4. Single Responsibility Principle
 - Each module has one reason to change
