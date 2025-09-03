@@ -8,6 +8,69 @@
 - **Dagger Hilt** for DI
 - **Retrofit + OkHttp** (logging)
 
+### Architecture Rationales
+
+#### Why Multi-Module Architecture?
+- **Scalability**: Each feature can be developed, tested, and maintained independently
+- **Build Performance**: Gradle can compile modules in parallel, reducing build times
+- **Team Collaboration**: Multiple developers can work on different modules without conflicts
+- **Reusability**: Core modules can be shared across features or even other projects
+- **Clear Boundaries**: Enforces separation of concerns at the module level
+- **Dependency Management**: Prevents circular dependencies and ensures unidirectional data flow
+
+#### Why Clean Architecture + MVVM?
+- **Separation of Concerns**: Each layer has a single responsibility (UI, Business Logic, Data)
+- **Testability**: Business logic in UseCases can be unit tested without Android dependencies
+- **Maintainability**: Changes in one layer don't affect others (e.g., API changes don't affect UI)
+- **Framework Independence**: Domain logic doesn't depend on Android or external frameworks
+- **MVVM Benefits**: ViewModel survives configuration changes, UI is reactive to state changes
+
+#### Why Dagger Hilt for Dependency Injection?
+- **Compile-time Safety**: Detects dependency graph issues at compile time
+- **Android Integration**: Built-in support for Android components (Activity, Fragment, ViewModel)
+- **Performance**: No reflection at runtime, generates efficient code
+- **Scoping**: Proper lifecycle management with predefined scopes (@Singleton, @ActivityScoped)
+- **Testing**: Easy to provide mock dependencies for testing
+
+#### Why Flow/StateFlow for Reactive Programming?
+- **Asynchronous Data Streams**: Perfect for network calls and database operations
+- **Lifecycle Awareness**: StateFlow automatically handles UI lifecycle in Compose
+- **Backpressure Handling**: Flow can handle fast producers with slow consumers
+- **Composability**: Easy to combine, transform, and filter data streams
+- **Cold vs Hot Streams**: Flow (cold) for one-shot operations, StateFlow (hot) for UI state
+
+#### Why DTO to Domain Mapping?
+- **API Independence**: Domain models don't change when API structure changes
+- **Null Safety**: Convert nullable API fields to non-null domain fields with defaults
+- **Data Validation**: Sanitize and validate data at the boundary
+- **Backwards Compatibility**: Can support multiple API versions with same domain models
+- **Clean Models**: Domain models contain only what the app needs, not what API provides
+
+#### Why This Module Structure (core vs feature)?
+- **Core Modules**: Shared functionality that multiple features depend on
+  - `core:model`: Pure Kotlin, no Android dependencies, shared by all layers
+  - `core:network`: Centralized networking with consistent error handling
+  - `core:ui`: Reusable UI components, consistent design system
+- **Feature Modules**: Self-contained business functionality
+  - Each feature owns its data layer, domain logic, and presentation
+  - Can be extracted into separate libraries if needed
+  - Parallel development without merge conflicts
+
+#### Why savedStateHandle for Back Navigation Results?
+- **Type Safety**: Compile-time checking of result keys and types
+- **Lifecycle Aware**: Automatically handles process death and recreation
+- **Navigation Independence**: Doesn't couple child screens to specific parent implementations
+- **Testability**: Easy to test navigation results in ViewModels
+- **Performance**: No serialization overhead, works with any data type
+
+#### Why Jetpack Compose over Traditional Views?
+- **Declarative UI**: UI is a function of state, reducing bugs from imperative updates
+- **Performance**: Smart recomposition only updates changed parts of the UI
+- **Less Boilerplate**: No need for findViewById, adapters, or manual state management
+- **Modern Toolkit**: Built for reactive programming patterns we use elsewhere
+- **Preview Support**: See UI changes instantly without running the app
+- **Interoperability**: Can gradually migrate from Views if needed
+
 ### End-to-end data flow
 Sequence: API → DTO → Repository mapping → Domain → ViewModel → UI
 
@@ -185,5 +248,20 @@ Handle back navigation result:
 - Testing: Use `MockWebServer` for API, unit test UseCases/Repositories; Compose UI tests for screens
 - Flavors/config: add API base URL override via build config or DI qualifier
 - Future: pagination, caching (Room), offline-first, more features, theming enhancements
+
+## Architecture Documentation
+
+For detailed rationales behind architectural decisions:
+- **Complete Architecture Overview**: [ARCHITECTURE.md](ARCHITECTURE.md) - Comprehensive system design rationales
+- **Main Architecture Rationales**: See "Architecture Rationales" section above
+- **App Module**: [app/ARCHITECTURE.md](app/ARCHITECTURE.md) - Application assembly and navigation
+- **Core Modules**: Each core module has an `ARCHITECTURE.md` file explaining design decisions
+  - [core:model](core/model/ARCHITECTURE.md) - Domain models and shared types
+  - [core:network](core/network/ARCHITECTURE.md) - Networking infrastructure
+  - [core:ui](core/ui/ARCHITECTURE.md) - Shared UI components and theming
+- **Feature Modules**: Example architecture documentation in feature modules
+  - [feature:categories](feature/categories/ARCHITECTURE.md) - Feature module pattern example
+
+These documents explain the "why" behind the architectural choices, complementing the "what" and "how" covered in this README.
 
 

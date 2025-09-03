@@ -19,4 +19,6 @@ Display all categories from the API.
 ### How to Extend
 - Add pagination/filtering; update mapping for new fields; expose callbacks to navigate to products.
 
+### Architecture Documentation
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed rationales behind the design decisions in this module.
 
