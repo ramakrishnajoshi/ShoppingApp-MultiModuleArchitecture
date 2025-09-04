@@ -218,7 +218,7 @@ graph TD
 ```
 
 ### Build & run
-- Android Studio (Giraffe or newer), JDK 11+, Android Gradle Plugin 8.7.2
+- Android Studio (Giraffe or newer), JDK 17+, Android Gradle Plugin 8.7.2
 - Internet required (uses `https://dummyjson.com`)
 - Run: `./gradlew :app:assembleDebug` or from Android Studio → Run app
 
