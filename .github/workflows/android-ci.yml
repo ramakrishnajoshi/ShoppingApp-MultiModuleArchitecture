@@ -22,7 +22,16 @@
 # - EFFICIENT RESOURCE USAGE: Leverages GitHub's concurrent runner capacity
 # - INDEPENDENT VALIDATION: Each job validates different aspects without dependencies
 # - MULTI-MODULE OPTIMIZATION: Perfect for modular architecture where different aspects
-#   can be validated simultaneously (code style, business logic, integration)
+#   can be validated simultaneously across all modules:
+#   * CODE STYLE: Lint job validates code quality across core modules (model, ui, network) 
+#     and feature modules (categories, categoryproducts, productdetail) simultaneously
+#   * BUSINESS LOGIC: Test job runs unit tests for each module's domain logic independently
+#     (e.g., repository tests in core:network, use case tests in feature modules)
+#   * INTEGRATION: Build job verifies that all modules compile and integrate correctly
+#     (app module depends on features, features depend on core modules)
+#   This parallel validation is especially valuable in multi-module projects because each
+#   module can have issues in different areas - style problems in one feature, test failures
+#   in another, or integration issues between core and feature modules.
 # - DEVELOPER PRODUCTIVITY: Quicker identification of which specific area has issues
 #
 # FAILURE HANDLING & RECOVERY FLOW:
