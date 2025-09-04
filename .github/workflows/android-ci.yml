@@ -1,5 +1,24 @@
+# Android CI/CD Pipeline
+# 
+# This GitHub Actions workflow provides automated continuous integration and deployment
+# for the ShoppingApp multi-module Android project. It ensures code quality, runs tests,
+# and builds the application automatically on every push and pull request.
+#
+# Why this is required:
+# - Ensures consistent code quality across all contributions
+# - Automatically catches build failures and test regressions
+# - Validates that all modules compile and integrate correctly
+# - Provides fast feedback to developers on code changes
+# - Enables confident releases through automated verification
+#
+# The workflow runs three parallel jobs for efficiency:
+# 1. Lint Check - Validates code style and detects potential issues
+# 2. Unit Tests - Runs all module tests to ensure functionality
+# 3. Build APK - Compiles the complete application to verify integration
+
 name: Android CI
 
+# Trigger conditions: Run on pushes and pull requests to main/develop branches
 on:
   push:
     branches: [ main, develop ]
@@ -7,19 +26,26 @@ on:
     branches: [ main, develop ]
 
 jobs:
+  # Job 1: Code Quality Analysis
+  # Runs Android lint to check for code style issues, potential bugs,
+  # and adherence to Android development best practices
   lint:
     name: Lint Check
     runs-on: ubuntu-latest
     
     steps:
+    # Checkout the repository code
     - uses: actions/checkout@v4
     
+    # Set up Java 11 environment (required for Android development)
     - name: Set up JDK 11
       uses: actions/setup-java@v4
       with:
         java-version: '11'
         distribution: 'temurin'
     
+    # Cache Gradle dependencies to speed up builds
+    # This prevents re-downloading dependencies on every run
     - name: Cache Gradle packages
       uses: actions/cache@v4
       with:
@@ -30,25 +56,33 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
     
+    # Make gradlew executable (required on Unix systems)
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     
+    # Run lint across all modules to check code quality
     - name: Run lint
       run: ./gradlew lint
 
+  # Job 2: Automated Testing
+  # Runs unit tests across all modules to ensure functionality
+  # and catch regressions in business logic
   test:
     name: Unit Tests
     runs-on: ubuntu-latest
     
     steps:
+    # Checkout the repository code
     - uses: actions/checkout@v4
     
+    # Set up Java 11 environment
     - name: Set up JDK 11
       uses: actions/setup-java@v4
       with:
         java-version: '11'
         distribution: 'temurin'
     
+    # Cache Gradle dependencies for faster builds
     - name: Cache Gradle packages
       uses: actions/cache@v4
       with:
@@ -59,33 +93,43 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
     
+    # Make gradlew executable
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     
+    # Execute all unit tests across feature and core modules
     - name: Run unit tests
       run: ./gradlew test
     
+    # Generate and publish test reports for visibility
+    # This creates a detailed report of test results in the GitHub interface
     - name: Generate test report
       uses: dorny/test-reporter@v1
-      if: success() || failure()
+      if: success() || failure()    # Run even if tests fail to show results
       with:
         name: Test Results
         path: '**/build/test-results/test/TEST-*.xml'
         reporter: java-junit
 
+  # Job 3: Build Verification
+  # Compiles the complete application to ensure all modules integrate correctly
+  # and generates a deployable APK artifact
   build:
     name: Build APK
     runs-on: ubuntu-latest
     
     steps:
+    # Checkout the repository code
     - uses: actions/checkout@v4
     
+    # Set up Java 11 environment
     - name: Set up JDK 11
       uses: actions/setup-java@v4
       with:
         java-version: '11'
         distribution: 'temurin'
     
+    # Cache Gradle dependencies for faster builds
     - name: Cache Gradle packages
       uses: actions/cache@v4
       with:
@@ -96,12 +140,17 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
     
+    # Make gradlew executable
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     
+    # Build the debug APK to verify complete integration
+    # This ensures all modules compile together successfully
     - name: Build with Gradle
       run: ./gradlew assembleDebug
     
+    # Upload the generated APK as an artifact
+    # This allows downloading the built app for testing or deployment
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
