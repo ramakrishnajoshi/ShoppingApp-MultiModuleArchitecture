@@ -103,12 +103,24 @@ core:model
 - **Requirements**: Only works with decoupled projects (which this architecture properly implements)
 
 **2. Build Cache (`org.gradle.caching=true`)**
-- **Purpose**: Stores compiled outputs and reuses them across builds when inputs haven't changed
-- **Local Cache**: Stores build outputs on developer machine for incremental builds
-- **Remote Cache**: Can be shared across team members and CI/CD (when configured)
-- **Multi-Module Benefit**: Each module's outputs are cached independently - if only `feature:categories` changes, other modules use cached outputs
+- **What is Build Cache**: A storage mechanism that saves the outputs of expensive build tasks (compilation, resource processing, code generation) and reuses them when the same inputs are encountered again
+- **Cache Contents**: 
+  - Compiled Java/Kotlin bytecode (.class files)
+  - Processed Android resources (compiled layouts, drawables, strings)
+  - Generated code (data binding, view binding, annotation processors)
+  - Packaged libraries (.aar files for Android modules)
+  - Test compilation outputs and processed test resources
+  - Lint analysis results and processed manifests
+- **How It Works**: 
+  - Gradle creates a unique hash key based on task inputs (source files, dependencies, build configuration)
+  - Before executing a task, checks if cache contains outputs for that input hash
+  - If cache hit: copies cached outputs instead of re-executing expensive compilation
+  - If cache miss: executes task normally and stores outputs for future use
+- **Local Cache**: Stores build outputs on developer machine (`~/.gradle/caches/build-cache-1/`) for incremental builds
+- **Remote Cache**: Can be shared across team members and CI/CD (when configured with build cache services)
+- **Multi-Module Benefit**: Each module's outputs are cached independently - if only `feature:categories` changes, other modules (`core:model`, `core:ui`, etc.) use cached outputs
 - **Performance Gain**: 50-90% faster incremental builds, especially valuable for clean builds
-- **Storage**: Local cache typically saves gigabytes of compilation work
+- **Storage Efficiency**: Local cache typically saves gigabytes of compilation work, with automatic cleanup of old entries
 
 **3. Configuration Cache (`org.gradle.configuration-cache=true`)**
 - **Purpose**: Caches the result of configuration phase (build script evaluation and task graph creation)
