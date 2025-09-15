@@ -47,6 +47,9 @@ updates:
         patterns:
           - "com.google.dagger*"
           - "*hilt*"
+      ui-libraries:
+        patterns:
+          - "io.coil-kt*"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
