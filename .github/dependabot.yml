@@ -1,0 +1,68 @@
+---
+version: 2
+updates:
+  # Enable version updates for Gradle dependencies
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "ramakrishnajoshi"
+    assignees:
+      - "ramakrishnajoshi"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "gradle"
+    # Group related dependencies together
+    groups:
+      android:
+        patterns:
+          - "com.android.*"
+          - "androidx.*"
+      compose:
+        patterns:
+          - "*compose*"
+      kotlin:
+        patterns:
+          - "org.jetbrains.kotlin*"
+          - "*kotlin*"
+      networking:
+        patterns:
+          - "com.squareup.retrofit2*"
+          - "com.squareup.okhttp3*"
+          - "com.google.code.gson*"
+      testing:
+        patterns:
+          - "junit*"
+          - "*test*"
+          - "*espresso*"
+      hilt:
+        patterns:
+          - "com.google.dagger*"
+          - "*hilt*"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "ramakrishnajoshi"
+    assignees:
+      - "ramakrishnajoshi"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
