@@ -1,13 +1,17 @@
 package com.example.feature.categoryproducts.data
 
 import com.example.core.model.Product
+import com.example.core.network.di.IoDispatcher
 import com.example.core.network.api.ProductApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
 class CategoryProductsRepositoryImpl @Inject constructor(
-    private val api: ProductApiService
+    private val api: ProductApiService,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : CategoryProductsRepository {
     override fun getProducts(category: String): Flow<List<Product>> = flow {
         val products = api.getProductsByCategory(category).products ?: emptyList()
@@ -26,7 +30,7 @@ class CategoryProductsRepositoryImpl @Inject constructor(
                 images = dto.images ?: emptyList()
             )
         })
-    }
+    }.flowOn(ioDispatcher)
 }
 
 

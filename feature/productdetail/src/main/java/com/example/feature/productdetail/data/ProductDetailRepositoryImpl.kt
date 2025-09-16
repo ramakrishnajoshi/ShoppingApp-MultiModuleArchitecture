@@ -1,13 +1,17 @@
 package com.example.feature.productdetail.data
 
 import com.example.core.model.Product
+import com.example.core.network.di.IoDispatcher
 import com.example.core.network.api.ProductApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
 class ProductDetailRepositoryImpl @Inject constructor(
-    private val api: ProductApiService
+    private val api: ProductApiService,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ProductDetailRepository {
     override fun getProduct(id: Int): Flow<Product> = flow {
         val dto = api.getProductById(id)
@@ -26,7 +30,7 @@ class ProductDetailRepositoryImpl @Inject constructor(
                 images = dto.images ?: emptyList()
             )
         )
-    }
+    }.flowOn(ioDispatcher)
 }
 
 
