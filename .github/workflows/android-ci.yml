@@ -103,6 +103,35 @@ jobs:
     # Make gradlew executable (required on Unix systems)
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
+    # ---------------------------------------------------------------------------
+    # Pre-fetch Gradle Dependencies
+    #
+    # WHY IS THIS STEP NEEDED?
+    # - GitHub Actions runners have two phases of network access:
+    #   1. Setup phase (before firewall rules apply): external downloads allowed.
+    #   2. Execution phase (firewall active): outbound requests to domains like
+    #      dl.google.com or mvnrepository.com may be blocked.
+    #
+    # WHAT THIS STEP DOES:
+    # - Forces Gradle to resolve and download *all required dependencies* early,
+    #   while network access is still open.
+    # - Stores dependencies into the local Gradle cache (~/.gradle).
+    # - Later steps (lint, test, build) can then run fully offline from cache,
+    #   avoiding firewall errors.
+    #
+    # EXTRA DETAILS:
+    # - "--no-daemon" avoids Gradle daemon issues on CI runners.
+    # - "|| true" ensures that the job does not fail if some subprojects
+    #   have no dependencies (Gradle may otherwise exit with non-zero).
+    #
+    # BENEFITS:
+    # - Firewall-safe builds (no blocked network calls).
+    # - More reliable caching between workflow runs.
+    # - Faster builds after warm-up.
+    # ---------------------------------------------------------------------------
+    - name: Pre-fetch Gradle dependencies
+      run: ./gradlew --no-daemon dependencies || true
     
     # Run lint across all modules to check code quality
     - name: Run lint
@@ -142,6 +171,10 @@ jobs:
     # Make gradlew executable
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
+    # Warm up Gradle: download wrapper + dependencies before firewall kicks in
+    - name: Pre-fetch Gradle dependencies
+      run: ./gradlew --no-daemon dependencies || true
     
     # Execute all unit tests across feature and core modules
     - name: Run unit tests
@@ -191,6 +224,10 @@ jobs:
     # Make gradlew executable
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
+    # Warm up Gradle: download wrapper + dependencies before firewall kicks in
+    - name: Pre-fetch Gradle dependencies
+      run: ./gradlew --no-daemon dependencies || true
     
     # Build the debug APK to verify complete integration
     # This ensures all modules compile together successfully
