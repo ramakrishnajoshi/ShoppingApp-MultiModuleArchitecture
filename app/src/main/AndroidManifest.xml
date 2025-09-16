@@ -14,11 +14,7 @@
         android:theme="@style/Theme.ShoppingApp"
         android:name=".ShoppingApp"
         tools:targetApi="31">
-        <provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            android:exported="false"
-            tools:node="remove" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
